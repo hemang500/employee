@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Bundle (JS + Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -69,7 +75,7 @@
 </head>
 <body>
     <nav class="sidebar">
-        <a href="#"><i class="bi bi-speedometer2"></i>Dashboard check</a>
+        <a href="#"><i class="bi bi-speedometer2"></i>Dashboard</a>
         <a href="#"><i class="bi bi-people"></i> Users</a>
         <a href="#" class="active"><i class="bi bi-list-task"></i> Client's</a>
         <a href="#"><i class="bi bi-ticket-detailed"></i> Tickets</a>
@@ -96,7 +102,7 @@
     <!-- Add Client Modal -->
     <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="background: linear-gradient(to bottom right, #6c6d7c, #313241); color: white;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="clientModalLabel">Add Client</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -113,10 +119,16 @@
                             <input type="text" id="phone" class="form-control" placeholder="Phone" required>
                         </div>
                         <div class="mb-3">
-                            <input type="text" id="status" class="form-control" placeholder="status" required>
+                            <select id="status" class="form-control" required>
+                                <option value="">Select Status</option>
+                                <option value="New">New</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Converted">Converted</option>
+                                <option value="Lost">Lost</option>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <input type="text" id="notes" class="form-control" placeholder="notes" required>
+                            <input type="text" id="notes" class="form-control" placeholder="Notes" required>
                         </div>
                         <div class="mb-3">
                             <input type="date" id="follow_up_date" class="form-control" required>
@@ -124,73 +136,80 @@
                         <div class="mb-3">
                             <input type="time" id="follow_up_time" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-success">Add Client</button>
+                        <button type="submit" class="btn btn-light text-dark">Add Client</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-      $(document).ready(function () {
-    fetchClientData();
+    $(document).ready(function () {
+        fetchClientData();
+    
+        // Add search functionality
+        $("#searchInput").on("keyup", function() {
+            let searchText = $(this).val().toLowerCase();
+            $("#clientTable tr:not(:first)").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1);
+            });
+        });
 
-    $("#clientForm").submit(function (e) {
-        e.preventDefault();
-        let clientData = {
-            client_name: $("#client_name").val(),
-            email: $("#email").val(),
-            phone: $("#phone").val(),
-            status: $("#status").val(),
-            notes: $("#notes").val(),
-            follow_up_date: $("#follow_up_date").val(),
-            follow_up_time: $("#follow_up_time").val()
-        };
-        
-        $.ajax({
-            url: "insert_client.php",
-            type: "POST",
-            data: clientData,
-            dataType: "json",
-            success: function (response) {
-                if (response.status === "success") {
-                    alert(response.message);
-                    fetchClientData();
-                    $("#clientModal").modal("hide");
-                    $("#clientForm")[0].reset();
-                } else {
-                    alert("Error: " + response.message);
+        // Prevent form from submitting normally and handle it via AJAX
+        $("#clientForm").on("submit", function (e) {
+            e.preventDefault(); // Prevent default form submission
+            let clientData = {
+                client_name: $("#client_name").val(),
+                email: $("#email").val(),
+                phone: $("#phone").val(),
+                status: $("#status").val(),
+                notes: $("#notes").val(),
+                follow_up_date: $("#follow_up_date").val(),
+                follow_up_time: $("#follow_up_time").val()
+            };
+            
+            $.ajax({
+                url: "insert_client.php",
+                type: "POST",
+                data: clientData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === "success") {
+                        alert(response.message);
+                        fetchClientData();
+                        // Close modal and remove backdrop
+                        const modal = bootstrap.Modal.getInstance($('#clientModal'));
+                        modal.hide();
+                        $('body').removeClass('modal-open');
+                        $('.modal-backdrop').remove();
+                        // Reset form
+                        $("#clientForm")[0].reset();
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function (xhr) {
+                    alert("Error in AJAX request: " + xhr.responseText);
                 }
-            },
-            error: function (xhr) {
-                alert("Error in AJAX request: " + xhr.responseText);
-            }
+            });
+            return false; // Additional protection against form submission
         });
+    
+        function fetchClientData() {
+            $.ajax({
+                url: "fetch_clients.php",
+                type: "GET",
+                success: function (data) {
+                    $("#clientTable").html(data);
+                    // Reapply search filter after data refresh
+                    $("#searchInput").trigger("keyup");
+                },
+                error: function () {
+                    $("#clientTable").html("<p class='text-danger'>Failed to load data.</p>");
+                }
+            });
+        }
     });
-
-    function fetchClientData() {
-        $.ajax({
-            url: "fetch_clients.php",
-            type: "GET",
-            success: function (data) {
-                $("#clientTable").html(data);
-            },
-            error: function () {
-                $("#clientTable").html("<p class='text-danger'>Failed to load data.</p>");
-            }
-        });
-    }
-
-    // Search functionality
-    $("#searchInput").on("keyup", function() {
-        let value = $(this).val().toLowerCase();
-        $("#clientTable tr").filter(function() {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-    });
-});
-
     </script>
 </body>
 </html>
