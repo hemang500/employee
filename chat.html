@@ -223,49 +223,6 @@
         </main>
     </div>
 
-    <script>
-
-document.addEventListener("DOMContentLoaded", function () {
-    const messageInput = document.getElementById("messageInput");
-    const chatBox = document.getElementById("chatBox");
-    const sendButton = document.getElementById("sendButton");
-
-    function sendMessage() {
-        let messageText = messageInput.value.trim();
-
-        if (messageText !== "") {
-            // Create a new message element
-            let newMessage = document.createElement("div");
-            newMessage.classList.add("chat-message");
-            newMessage.style.justifyContent = "flex-end"; // Align user messages to the right
-
-            newMessage.innerHTML = `
-                <div class="message-content my-message">
-                    ${messageText}
-                    <br>  
-                    <span class="timestamp">You <span class="details">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></span>
-                </div>
-                <img src="profile-user.jpg" alt="User">
-            `;
-
-            chatBox.appendChild(newMessage);
-            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
-            messageInput.value = ""; // Clear input field
-        }
-    }
-
-    // Event listener for pressing Enter key
-    messageInput.addEventListener("keypress", function (event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault(); // Prevent newline in input field
-            sendMessage();
-        }
-    });
-
-    // Event listener for clicking send button
-    sendButton.addEventListener("click", sendMessage);
-});
-
-    </script>
+   
 </body>
 </html>
