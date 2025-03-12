@@ -186,6 +186,7 @@
             <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Charlie</div>
         </aside>
 
+        <!-- Main chat Area -->
         <main class="main">
             <div class="header">
                 <h2>minitZgo</h2>
@@ -195,31 +196,76 @@
                     <div class="icon"><i class="bi bi-gear"></i></div>
                 </div>
             </div>
-            <div class="chat-box">
+
+            <!-- chat messages -->
+            <div class="chat-box" id="chatBox">
                 
                 <div class="chat-message">
                      
                     <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">    
-                    <div class="message-content">Hey team, let's get started on today's tasks!  <br>  <span style=" opacity: 0.7; font-size: 13.5px;">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>
-                    
+                    <div class="message-content">Hey team, let's get started on today's tasks!  <br>  <span style=" opacity: 0.7; font-size: 13.5px;">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>   
                 </div>
 
                 
-                <div class="chat-message" style="justify-content: flex-end;">
+                <div class="chat-message self" style="justify-content: flex-end;">
                     <div class="message-content" style="background: lightgreen;">Sure, let's go!<br> <span style=" opacity: 0.7; font-size: 13.5px;">Alice <span div class="details">10:30 AM, Monday</span></span> </div>
                     <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">
-                </div>
-             
-                
+                </div>   
             </div>
 
+            <!-- message input -->
             <div class="message-input">
-                <input type="text" placeholder="Type a message...">
+                <input type="text" id="messageInput" placeholder="Type a message...">
                 <i class="bi bi-emoji-smile icon"></i>
                 <i class="bi bi-paperclip icon"></i>
-                <i class="bi bi-send icon"></i>
+                <i class="bi bi-send icon" id="sendButton"></i>
             </div>
         </main>
     </div>
+
+    <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const messageInput = document.getElementById("messageInput");
+    const chatBox = document.getElementById("chatBox");
+    const sendButton = document.getElementById("sendButton");
+
+    function sendMessage() {
+        let messageText = messageInput.value.trim();
+
+        if (messageText !== "") {
+            // Create a new message element
+            let newMessage = document.createElement("div");
+            newMessage.classList.add("chat-message");
+            newMessage.style.justifyContent = "flex-end"; // Align user messages to the right
+
+            newMessage.innerHTML = `
+                <div class="message-content my-message">
+                    ${messageText}
+                    <br>  
+                    <span class="timestamp">You <span class="details">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></span>
+                </div>
+                <img src="profile-user.jpg" alt="User">
+            `;
+
+            chatBox.appendChild(newMessage);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+            messageInput.value = ""; // Clear input field
+        }
+    }
+
+    // Event listener for pressing Enter key
+    messageInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); // Prevent newline in input field
+            sendMessage();
+        }
+    });
+
+    // Event listener for clicking send button
+    sendButton.addEventListener("click", sendMessage);
+});
+
+    </script>
 </body>
 </html>
