@@ -371,6 +371,16 @@ $_SESSION['employee_id'];
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <form id="leaveForm" onsubmit="submitLeaveForm(event)" class="needs-validation" novalidate>
+
+                                            <div class="modal-body">
+                                                <!-- employee Id field -->
+                                                    <div class="mb-4">
+                                                        <label class="form-label fw-bold">
+                                                            <i class="bi bi-calendar-check me-2"></i> Employee ID*
+                                                        </label>
+                                                        <input type="text" class="form-control form-control-lg shadow-sm" required name="employeeId" placeholder="Enter your ID">
+                                                    </div>
+
                                                 <div class="modal-body">
                                                     <div class="mb-4">
                                                         <label class="form-label fw-bold">
