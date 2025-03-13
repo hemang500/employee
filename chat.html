@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -203,7 +205,7 @@
                 <div class="chat-message">
                      
                     <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">    
-                    <div class="message-content">Hey team, let's get started on today's tasks!  <br>  <span style=" opacity: 0.7; font-size: 13.5px;">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>   
+                    <div class="chatBox">  <br>  <span style=" opacity: 0.7; font-size: 13.5px;">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>   
                 </div>
 
                 
@@ -223,6 +225,63 @@
         </main>
     </div>
 
-   
+
+<script>
+    function fetchMessages() {
+        fetch('maingroup.php')
+            .then(response => response.json())
+            .then(data => {
+                const chatBox = document.getElementById('chatBox');
+                chatBox.innerHTML = '';
+                
+                data.forEach(message => {
+                    const isSelf = message.sender_name === 'CurrentUser'; // Replace with actual logic
+                    
+                    // Format date
+                    const messageDate = new Date(message.created_at);
+                    const today = new Date();
+                    const diffDays = Math.floor((today - messageDate) / (1000 * 60 * 60 * 24));
+                    
+                    let formattedDate;
+                    if (diffDays === 0) {
+                        formattedDate = 'Today ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    } else if (diffDays === 1) {
+                        formattedDate = 'Yesterday ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    } else if (diffDays <= 3) {
+                        formattedDate = messageDate.toLocaleDateString('en-US', { weekday: 'long' }) + 
+                                       ' ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    } else {
+                        formattedDate = messageDate.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        }) + ' ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    const messageHtml = `
+                        <div class="chat-message ${isSelf ? 'self' : ''}" ${isSelf ? 'style="justify-content: flex-end;"' : ''}>
+                            ${!isSelf ? '<img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">' : ''}
+                            <div class="message-content" ${isSelf ? 'style="background: lightgreen;"' : ''}>
+                                ${message.message}<br>
+                                <span style="opacity: 0.7; font-size: 13.5px;">
+                                    ${message.sender_name} 
+                                    <span class="details">${formattedDate}</span>
+                                </span>
+                            </div>
+                            ${isSelf ? '<img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">' : ''}
+                        </div>
+                    `;
+                    chatBox.innerHTML += messageHtml;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Fetch messages initially
+        fetchMessages();
+
+    // Refresh messages every 5 seconds
+    setInterval(fetchMessages, 500);
+</script>
 </body>
 </html>
