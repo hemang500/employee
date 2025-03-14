@@ -2,7 +2,8 @@
 session_start();
 include 'backend/db.php'; // Ensure this file correctly establishes $conn
 
-$error = ""; // Initialize error variable to avoid undefined variable warning
+//set session timeout when browser is closed
+// session_set_cookie_params(0);
 
 if (!$conn) {
     die("Database connection failed: " . mysqli_connect_error());
