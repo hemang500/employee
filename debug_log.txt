@@ -1,0 +1,18 @@
+Received POST data:
+Array
+(
+    [employeeId] => 1
+    [leaveType] => personal
+    [startDate] => 2025-03-15
+    [endDate] => 2025-03-16
+    [reason] => somithing
+)
+
+Form Values:
+Employee ID: 1
+Leave Type: personal
+Start: 2025-03-15
+End: 2025-03-16
+Reason: somithing
+File Upload Path: uploads/leave_docs1741993653_holi poster minitzgo.png
+SQL Insert Success

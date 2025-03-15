@@ -1,0 +1,435 @@
+
+<?php
+    session_start();
+  
+      $eid =  $_SESSION['employee_id'];
+      $name =  $_SESSION['full_name'];
+      $role =  $_SESSION['role'];
+         
+         
+     
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: black;
+        }
+        .navbar {
+            width: 100%;
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .navbar .icons {
+            display: flex;
+            gap: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .sidebar {
+            width: 20vw;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: rgba(211, 195, 195, 0.1);
+        }
+        .chat-sidebar {
+            flex: 0.3;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            color: white;
+            overflow-y: auto;
+        }
+        .chat-sidebar .member {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .chat-sidebar .member:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .chat-sidebar .member img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .main {
+            flex: 1;
+            padding: 20px;
+            background: radial-gradient(circle, white, skyblue, lightgreen);
+            border-radius: 15px;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-box {
+            flex: 1;
+ 
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            
+            
+        }
+        .chat-message {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .chat-message img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .message-content {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+        }
+        .message-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(160, 151, 151, 0.34);
+            border-radius: 25px;
+            margin-top: 10px;
+        }
+        .message-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 25px;
+        }
+        .message-input .icon {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .header-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header-icons .icon {
+            background: white;
+            border-radius: 50%;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .chat-message .details {
+            font-size: 12px;
+            color: gray;
+            margin-top: 2px;
+        }
+        .active-chat {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;    
+        }
+         /* Hide scrollbar by default */
+         .chat-container::-webkit-scrollbar {
+                    width: 8px;
+                    display: none;
+                }
+
+                /* Show scrollbar on hover */
+                .chat-container:hover::-webkit-scrollbar {
+                    display: block;
+                }
+
+                .chat-container::-webkit-scrollbar-track {
+                    background: rgba(0,0,0,0.1);
+                    border-radius: 4px;
+                }
+
+                .chat-container::-webkit-scrollbar-thumb {
+                    background: rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                }
+    </style>
+</head>
+<body>
+   
+
+    <div style="display: flex; flex: 1;">
+        <nav class="sidebar">
+            <a href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="#"><i class="bi bi-people"></i> Users</a>
+            <a href="#" class="active"><i class="bi bi-chat"></i> Teams</a>
+            <a href="#"><i class="bi bi-ticket-detailed"></i> Tickets</a>
+            <a href="#"><i class="bi bi-bar-chart-line"></i> Reports</a>
+            <a href="#"><i class="bi bi-gear"></i> Settings</a>
+            <a href="#"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </nav>
+
+        <aside class="chat-sidebar" style="overflow-y: auto; scrollbar-width: thin;">
+                    <h4>Team Members</h4>
+                    <div class="member active-chat"><img src="images/dev.webp" alt=""> Dev Intern's</div><br>
+                    <div class="member"><img src="images/ui.jpg" alt=""> UX/UI Team</div><hr><span style="opacity:0.6;">Management  </span>
+                    <span style="opacity:0.4; padding:10px"> No access</span>
+                    <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Production</div>
+                    <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Deployment</div>
+                    <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Seniors Team</div>
+                    <div class="member"><img src="https://www.shutterstock.com/image-vector/blazer-icon-vector-glyph-style-260nw-1182172069.jpg" alt=""> BDM Team</div>
+                    <div class="member"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRcRBoorAOVAOqotm-7CX878D0HMg1QtbIkordKUJRlSmEj0n8FN8Gclz7EV-kr0tw_3Q&usqp=CAU" alt=""> Sales Team</div>
+                    <div class="member"><img src="https://cdn2.vectorstock.com/i/1000x1000/84/71/neon-glowing-star-vector-13368471.jpg" alt=""> Marketing Team</div>
+                </aside>
+
+                <!-- Main chat Area -->
+                <main class="main">
+                    <div class="header">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <h2>minitZgo</h2>
+                            <div style="position: relative;">
+                                <input type="text" id="searchChat" 
+                                    placeholder="Search messages..." 
+                                    style="
+                                        background: rgba(255, 255, 255, 0.2);
+                                        border: none;
+                                        border-radius: 20px;
+                                        padding: 8px 35px 8px 15px;
+                                        color: black;
+                                        width: 250px;
+                                    ">
+                                <i class="bi bi-search" 
+                                    style="
+                                        position: absolute;
+                                        right: 12px;
+                                        top: 50%;
+                                        transform: translateY(-50%);
+                                        color: rgba(0,0,0,0.5);
+                                    "></i>
+                            </div>
+                        </div>
+                        <div class="header-icons">
+                            <div class="icon"><i class="bi bi-bell"></i></div>
+                            <div class="icon"><i class="bi bi-envelope"></i></div>
+                            <div class="icon"><i class="bi bi-gear"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="chat-container" style="height: calc(100vh - 250px); overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"> 
+                        <div class="chat-box" id="chatBox" style="scrollbar-width: thin;">
+                            <div class="chat-message">
+                                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">    
+                                <div class="chatBox">  <br>  <span style="opacity: 0.7; font-size: 13.5px; ">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>   
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message-input" style="position: sticky; bottom: 0; width: 100%; margin: 10px 0;">
+                        <input type="text" id="messageInput" placeholder="Type a message..." style="min-width: 200px; max-width: 100%;">
+                        <div style="display: flex; gap: 10px; flex-wrap: nowrap;">
+                            <i class="bi bi-emoji-smile icon"></i>
+                            <i class="bi bi-paperclip icon"></i>
+                            <i class="bi bi-send icon" id="sendButton"></i>
+                        </div>
+                    </div>
+                </main>
+                </div>
+
+                <script>
+                const searchInput = document.getElementById('searchChat');
+                let currentSearchTerm = '';
+
+                function performSearch() {
+                    currentSearchTerm = searchInput.value.toLowerCase();
+                    const messages = document.querySelectorAll('.chat-message');
+                    let foundMessages = false;
+                    
+                    messages.forEach(message => {
+                        const messageText = message.textContent.toLowerCase();
+                        if (currentSearchTerm === '') {
+                            message.style.display = 'flex';
+                            foundMessages = true;
+                        } else {
+                            const isVisible = messageText.includes(currentSearchTerm);
+                            message.style.display = isVisible ? 'flex' : 'none';
+                            if (isVisible) foundMessages = true;
+                        }
+                    });
+
+                    return foundMessages;
+                }
+
+                function handleSearch(e) {
+                    if (e) e.preventDefault();
+                    performSearch();
+                }
+
+                searchInput.addEventListener('input', handleSearch);
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSearch();
+                    }
+                });
+
+                // Update search results when new messages are fetched
+                const originalFetchMessages = window.fetchMessages;
+                window.fetchMessages = async function() {
+                    const response = await fetch('maingroup.php');
+                    const data = await response.json();
+                    await originalFetchMessages();
+                    if (currentSearchTerm) {
+                        performSearch();
+                    }
+                };
+                </script>
+
+
+            <script>
+                function fetchMessages() {
+                    fetch('maingroup.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            const chatBox = document.getElementById('chatBox');
+                            chatBox.innerHTML = '';
+                            const currentUser = '<?php echo $name; ?>';
+                            const currentUserId = '<?php echo $eid; ?>';
+                            
+                            data.forEach(message => {
+                                const isSelf = message.sender_name === currentUser && message.sender_id === currentUserId;
+                                
+                                // Format date
+                                const messageDate = new Date(message.created_at);
+                                const today = new Date();
+                                const diffDays = Math.floor((today - messageDate) / (1000 * 60 * 60 * 24));
+                                
+                                let formattedDate;
+                                if (diffDays === 0) {
+                                    formattedDate = 'Today ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                } else if (diffDays === 1) {
+                                    formattedDate = 'Yesterday ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                } else if (diffDays <= 3) {
+                                    formattedDate = messageDate.toLocaleDateString('en-US', { weekday: 'long' }) + 
+                                               ' ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                } else {
+                                    formattedDate = messageDate.toLocaleDateString('en-US', { 
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                    }) + ' ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                }
+
+                                const messageHtml = isSelf ? `
+                                    <div class="chat-message self" style="justify-content: flex-end;">
+                                        <div class="message-content" style="background: lightgreen;">
+                                            ${message.message}<br>
+                                            <span style="opacity: 0.7; font-size: 13.5px;">
+                                                ${message.sender_name} 
+                                                <span class="details">${formattedDate}</span>
+                                            </span>
+                                        </div>
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">
+                                    </div>
+                                ` : `
+                                    <div class="chat-message">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="">
+                                        <div class="message-content">
+                                            ${message.message}<br>
+                                            <span style="opacity: 0.7; font-size: 13.5px;">
+                                                ${message.sender_name} 
+                                                <span class="details">${formattedDate}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                `;
+                                chatBox.innerHTML += messageHtml;
+                            });
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+
+                // Fetch messages initially
+                fetchMessages();
+
+                // Refresh messages every 5 seconds
+                setInterval(fetchMessages, 500);
+            </script>
+
+            <script> 
+            document.getElementById('sendButton').addEventListener('click', function() {
+                const messageInput = document.getElementById('messageInput');
+                const message = messageInput.value.trim();
+
+                if (message !== '') {
+                    fetch('maingroup_send.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            sender_id: '<?php echo $eid; ?>',
+                            sender_name: '<?php echo $name; ?>',
+                            message: message
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            messageInput.value = '';
+                            fetchMessages(); // Refresh messages immediately
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+            </script>
+
+            </body>
+</html>
