@@ -132,7 +132,7 @@
             padding: 10px;
             background: rgba(160, 151, 151, 0.34);
             border-radius: 25px;
-            margin-top: 10px;
+            margin-top: 20px;
         }
         .message-input input {
             flex: 1;
@@ -176,6 +176,13 @@
             color: gray;
             margin-top: 2px;
         }
+
+        .sends:hover {
+            transform: scale(1.2);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
         .active-chat {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px;    
@@ -269,16 +276,178 @@
                                 <div class="chatBox">  <br>  <span style="opacity: 0.7; font-size: 13.5px; ">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>   
                             </div>
                         </div>
+                
                     </div>
-
-                    <div class="message-input" style="position: sticky; bottom: 0; width: 100%; margin: 10px 0;">
-                        <input type="text" id="messageInput" placeholder="Type a message..." style="min-width: 200px; max-width: 100%;">
-                        <div style="display: flex; gap: 10px; flex-wrap: nowrap;">
-                            <i class="bi bi-emoji-smile icon"></i>
-                            <i class="bi bi-paperclip icon"></i>
-                            <i class="bi bi-send icon" id="sendButton"></i>
+                    
+<div class="message-input" style="position: sticky; bottom: 0; width: 100%; margin: 10px 0; display: flex; flex-wrap: nowrap; align-items: center;">
+                        <input type="text" id="messageInput" placeholder="Type a message..." style="flex: 1; min-width: 0; padding: 10px;" onkeypress="if(event.key === 'Enter') { document.getElementById('sendButton').click(); this.value = ''; }">
+                        <div style="display: flex; gap: 10px; flex-shrink: 0;">
+                            <div class="emoji-wrapper" style="position: relative;">
+                                <i class="bi bi-emoji-smile icon sends" id="emojiButton"></i>
+                                <div id="emojiPicker" style="display: none; position: absolute; bottom: 40px; right: 0; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 250px; width: 90vw;">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); gap: 5px;">
+                                        <?php
+                                        $emojis = ['😀', '😂', '😊', '😍', '😎', '😢', '😡', '🎉', '❤️', '👍', '👋', '🙏', '🔥', '⭐', '💡', '💪'];
+                                        foreach ($emojis as $emoji) {
+                                            echo "<span class='emoji' style='cursor: pointer; text-align: center;'>$emoji</span>";
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Meet Scheduler Button -->
+                            <i class="bi bi-calendar-plus icon sends" id="meetSchedulerBtn" onclick="showMeetScheduler()"></i>
+                            <i class="bi bi-send icon sends" id="sendButton" style="margin-right:30px" onclick="sendMessage()"></i>
                         </div>
                     </div>
+                    <script>
+                    function sendMessage() {
+                        const messageInput = document.getElementById('messageInput');
+                        const message = messageInput.value.trim();
+
+                        if (message !== '') {
+                            fetch('maingroup_send.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    sender_id: '<?php echo $eid; ?>',
+                                    sender_name: '<?php echo $name; ?>',
+                                    message: message
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    messageInput.value = '';
+                                    fetchMessages();
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        }
+                    }
+                    </script>
+
+                    <!-- Meet Scheduler Modal -->
+                    <div id="meetSchedulerModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: transprent; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
+                        <h3>Schedule A Meet</h3>
+                        <form id="meetSchedulerForm">
+                            <input type="text" class="rounded-pill" id="meetTitle" placeholder="Meeting Title" required><br>
+                            <input type="datetime-local" class="rounded-pill" id="meetDateTime" required><br>
+                            <input type="text" class="rounded-pill" id="meetLink" placeholder="Meet Link" required><br>
+                            <button type="submit" class="btn btn-primary rounded-pill">Schedule Meeting</button>
+                            <button type="button" class="btn btn-secondary rounded-pill" onclick="closeMeetScheduler()">Cancel</button>
+                        </form>
+                    </div>
+
+                    <script>
+                    function showMeetScheduler() {
+                        document.getElementById('meetSchedulerModal').style.display = 'block';
+                    }
+
+                    function closeMeetScheduler() {
+                        document.getElementById('meetSchedulerModal').style.display = 'none';
+                    }
+
+                    document.getElementById('meetSchedulerForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const title = document.getElementById('meetTitle').value;
+                        const dateTime = new Date(document.getElementById('meetDateTime').value);
+                        const link = document.getElementById('meetLink').value;
+                        
+                        // Schedule meeting
+                        scheduleMeet(title, dateTime, link);
+                        
+                        // Post meeting announcement
+                        const announcement = `🎯 New Meeting Scheduled!\n
+                            📌 ${title}\n
+                            🕒 ${dateTime.toLocaleString()}\n
+                            🔗 ${link}`;
+                        
+                        // Send to chat
+                        fetch('maingroup_send.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                sender_id: '<?php echo $eid; ?>',
+                                sender_name: '<?php echo $name; ?>',
+                                message: announcement
+                            })
+                        });
+
+                        // Set reminder
+                        const reminderTime = new Date(dateTime.getTime() - 3 * 60000); // 3 minutes before
+                        const currentTime = new Date();
+                        
+                        // Only set reminder if meeting is in the future
+                        if (reminderTime > currentTime) {
+                            const timeoutDuration = reminderTime.getTime() - currentTime.getTime();
+                            const timerId = setTimeout(() => {
+                                const reminder = `⚠️ Reminder: Meeting "${title}" starts in 3 minutes!\n🔗 ${link}`;
+                                fetch('maingroup_send.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        sender_id: '<?php echo $eid; ?>',
+                                        sender_name: '<?php echo $name; ?>',
+                                        message: reminder
+                                    })
+                                });
+                            }, timeoutDuration);
+
+                            // Store timeout ID with meeting details
+                            const reminderData = { timerId, title, dateTime: reminderTime.toISOString() };
+                            localStorage.setItem(`reminder_${title}`, JSON.stringify(reminderData));
+                        }
+
+                        closeMeetScheduler();
+                    });
+
+                    function scheduleMeet(title, dateTime, link) {
+                        // Store meeting details in localStorage
+                        const meetings = JSON.parse(localStorage.getItem('scheduledMeetings') || '[]');
+                        meetings.push({ title, dateTime, link });
+                        localStorage.setItem('scheduledMeetings', JSON.stringify(meetings));
+                    }
+                    </script>
+
+                    <style>
+                    #meetSchedulerModal input {
+                        margin: 10px 0;
+                        padding: 8px;
+                        width: 100%;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                    }
+                    #meetSchedulerModal button {
+                        margin: 10px 5px;
+                        padding: 8px 15px;
+                    }
+                    </style>
+
+                    <script>
+                    document.getElementById('emojiButton').addEventListener('click', function() {
+                        const picker = document.getElementById('emojiPicker');
+                        picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+                    });
+
+                    document.querySelectorAll('.emoji').forEach(emoji => {
+                        emoji.addEventListener('click', function() {
+                            const input = document.getElementById('messageInput');
+                            input.value += this.textContent;
+                            document.getElementById('emojiPicker').style.display = 'none';
+                        });
+                    });
+
+                    // Close emoji picker when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!e.target.closest('.emoji-wrapper')) {
+                            document.getElementById('emojiPicker').style.display = 'none';
+                        }
+                    });
+                    </script>
                 </main>
                 </div>
 
