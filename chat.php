@@ -268,7 +268,6 @@
                             <div class="icon"><i class="bi bi-gear"></i></div>
                         </div>
                     </div>
-
                     <div class="chat-container" style="height: calc(100vh - 250px); overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"> 
                         <div class="chat-box" id="chatBox" style="scrollbar-width: thin;">
                             <div class="chat-message">
@@ -276,11 +275,72 @@
                                 <div class="chatBox">  <br>  <span style="opacity: 0.7; font-size: 13.5px; ">Alice <span div class="details">10:30 AM, Monday</span></span>  </div>   
                             </div>
                         </div>
-                
                     </div>
+
+                    <script>
+                    // Function to scroll to bottom
+                    function scrollToBottom() {
+                        const chatContainer = document.querySelector('.chat-container');
+                        if (chatContainer) {
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        }
+                    }
+
+                    // Initial scroll on page load
+                    document.addEventListener('DOMContentLoaded', scrollToBottom);
+
+                    let lastMessageCount = 0;
+                    let isUserScrolling = false;
+                    const chatContainer = document.querySelector('.chat-container');
+
+                    // Track user scrolling
+                    chatContainer.addEventListener('scroll', () => {
+                        const isAtBottom = Math.abs(chatContainer.scrollHeight - chatContainer.clientHeight - chatContainer.scrollTop) < 50;
+                        isUserScrolling = !isAtBottom;
+                    });
+
+                    async function fetchMessages() {
+                        try {
+                            const response = await fetch('maingroup.php');
+                            const data = await response.json();
+                            const chatBox = document.getElementById('chatBox');
+                            
+                            if (chatBox && data.length !== lastMessageCount) {
+                                chatBox.innerHTML = ''; // Clear existing messages
+                                const currentUser = '<?php echo $name; ?>';
+                                const currentUserId = '<?php echo $eid; ?>';
+                                
+                                data.forEach(message => {
+                                    // Your existing message rendering logic here
+                                    // This will be handled by your other fetchMessages implementation
+                                });
+
+                                lastMessageCount = data.length;
+
+                                // Only scroll to bottom if user isn't manually scrolling
+                                // or if it's a new message from the current user
+                                if (!isUserScrolling || data[data.length - 1]?.sender_id === currentUserId) {
+                                    setTimeout(scrollToBottom, 100); // Small delay to ensure content is rendered
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                        }
+                    }
+
+                    // Call fetchMessages initially and set up interval
+                    fetchMessages();
+                    setInterval(fetchMessages, 500);
+                    </script>
                     
 <div class="message-input" style="position: sticky; bottom: 0; width: 100%; margin: 10px 0; display: flex; flex-wrap: nowrap; align-items: center;">
-                        <input type="text" id="messageInput" placeholder="Type a message..." style="flex: 1; min-width: 0; padding: 10px;" onkeypress="if(event.key === 'Enter') { document.getElementById('sendButton').click(); this.value = ''; }">
+                        <input type="text" id="messageInput" placeholder="Type a message..." style="flex: 1; min-width: 0; padding: 10px;" 
+                            onkeypress="if(event.key === 'Enter') { 
+                                document.getElementById('sendButton').click();
+                                this.value = '';
+                                return false;
+                            }" 
+                            onclick="if(this.value === this.defaultValue) { this.value = ''; }">
                         <div style="display: flex; gap: 10px; flex-shrink: 0;">
                             <div class="emoji-wrapper" style="position: relative;">
                                 <i class="bi bi-emoji-smile icon sends" id="emojiButton"></i>
@@ -298,37 +358,26 @@
                             
                             <!-- Meet Scheduler Button -->
                             <i class="bi bi-calendar-plus icon sends" id="meetSchedulerBtn" onclick="showMeetScheduler()"></i>
+                            
+                            <!-- File Share Button -->
+                            <i class="bi bi-file-earmark-arrow-up icon sends" onclick="showFileShare()"></i>
+                            
                             <i class="bi bi-send icon sends" id="sendButton" style="margin-right:30px" onclick="sendMessage()"></i>
+                        <!-- File Share Modal -->
+                        <div id="fileShareModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: transprent; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
+                            <h3>Share File's</h3>
+                            <form id="fileShareForm">
+                                <input type="text" class="rounded-pill" id="fileTitle" placeholder="File Title" required><br>
+                                <input type="url" class="rounded-pill" id="fileLink" placeholder="WeTransfer/Drive Link" required><br>
+                                <textarea id="fileDescription" class="rounded" placeholder="Brief description" rows="3"></textarea><br>
+                                <button type="submit" class="btn btn-primary rounded-pill">Share</button>
+                                <button type="button" class="btn btn-secondary rounded-pill" onclick="closeModals()">Cancel</button>
+                            </form>
                         </div>
-                    </div>
-                    <script>
-                    function sendMessage() {
-                        const messageInput = document.getElementById('messageInput');
-                        const message = messageInput.value.trim();
 
-                        if (message !== '') {
-                            fetch('maingroup_send.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    sender_id: '<?php echo $eid; ?>',
-                                    sender_name: '<?php echo $name; ?>',
-                                    message: message
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    messageInput.value = '';
-                                    fetchMessages();
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                        }
-                    }
-                    </script>
+                    
+                    </div>
+                     
 
                     <!-- Meet Scheduler Modal -->
                     <div id="meetSchedulerModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: transprent; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
@@ -338,10 +387,93 @@
                             <input type="datetime-local" class="rounded-pill" id="meetDateTime" required><br>
                             <input type="text" class="rounded-pill" id="meetLink" placeholder="Meet Link" required><br>
                             <button type="submit" class="btn btn-primary rounded-pill">Schedule Meeting</button>
-                            <button type="button" class="btn btn-secondary rounded-pill" onclick="closeMeetScheduler()">Cancel</button>
+                            <button type="button" class="btn btn-secondary rounded-pill" onclick="closeModals()">Cancel</button>
                         </form>
                     </div>
 
+                    <script>
+                        let currentOpenModal = null;
+
+                        function closeModals() {
+                            document.getElementById('fileShareModal').style.display = 'none';
+                            document.getElementById('meetSchedulerModal').style.display = 'none';
+                            currentOpenModal = null;
+                        }
+
+                        function toggleModal(modalId) {
+                            const modal = document.getElementById(modalId);
+                            
+                            // If there's a currently open modal, close it
+                            if (currentOpenModal && currentOpenModal !== modalId) {
+                                document.getElementById(currentOpenModal).style.display = 'none';
+                            }
+
+                            // Toggle the clicked modal
+                            if (modal.style.display === 'none') {
+                                modal.style.display = 'block';
+                                currentOpenModal = modalId;
+                            } else {
+                                modal.style.display = 'none';
+                                currentOpenModal = null;
+                            }
+                        }
+
+                        function showFileShare() {
+                            toggleModal('fileShareModal');
+                        }
+
+                        function showMeetScheduler() {
+                            toggleModal('meetSchedulerModal');
+                        }
+                    </script>
+                    <script>
+                        function showFileShare() {
+                            document.getElementById('fileShareModal').style.display = 'block';
+                        }
+
+                        function closeFileShare() {
+                            document.getElementById('fileShareModal').style.display = 'none';
+                        }
+
+                        document.getElementById('fileShareForm').addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            const title = document.getElementById('fileTitle').value;
+                            const link = document.getElementById('fileLink').value;
+                            const description = document.getElementById('fileDescription').value;
+                            
+                            // Format file share message
+                            const fileMessage = `📎 Shared File:\n
+                                📑 ${title}\n
+                                📝 ${description}\n
+                                🔗 ${link}`;
+                            
+                            // Send to chat
+                            fetch('maingroup_send.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    sender_id: '<?php echo $eid; ?>',
+                                    sender_name: '<?php echo $name; ?>',
+                                    message: fileMessage
+                                })
+                            });
+
+                            closeFileShare();
+                        });
+                        </script>
+
+                        <style>
+                        #fileShareModal input, #fileShareModal textarea {
+                            margin: 10px 0;
+                            padding: 8px;
+                            width: 100%;
+                            border: 1px solid #ddd;
+                        }
+                        #fileShareModal button {
+                            margin: 10px 5px;
+                            padding: 8px 15px;
+                        }
+                        </style>
                     <script>
                     function showMeetScheduler() {
                         document.getElementById('meetSchedulerModal').style.display = 'block';

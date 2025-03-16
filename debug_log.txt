@@ -16,3 +16,13 @@ End: 2025-03-16
 Reason: somithing
 File Upload Path: uploads/leave_docs1741993653_holi poster minitzgo.png
 SQL Insert Success
+Received POST data:
+Array
+(
+    [employeeId] => 
+    [leaveType] => 
+    [startDate] => 
+    [endDate] => 
+    [reason] => 
+)
+
