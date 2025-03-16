@@ -87,8 +87,25 @@
     <main class="main">
         <div class="header">
             <h2>Clients Follow-Up</h2>
-            <div class="search-bar">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search clients...">
+            <div style="position: relative;">
+                <input type="text" id="searchInput" 
+                    placeholder="Search Clients..." 
+                    style="
+                        background: rgba(255, 255, 255, 0.2);
+                        border: none;
+                        border-radius: 20px;
+                        padding: 8px 35px 8px 15px;
+                        color: black;
+                        width: 250px;
+                    ">
+                <i class="bi bi-search" 
+                    style="
+                        position: absolute;
+                        right: 12px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: rgba(0,0,0,0.5);
+                    "></i>
             </div>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#clientModal">Add Client</button>
         </div>
