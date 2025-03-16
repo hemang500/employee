@@ -16,3 +16,39 @@ End: 2025-03-16
 Reason: somithing
 File Upload Path: uploads/leave_docs1741993653_holi poster minitzgo.png
 SQL Insert Success
+Received POST data:
+Array
+(
+    [employeeId] => 1
+    [leaveType] => personal
+    [startDate] => 2025-03-22
+    [endDate] => 2025-03-29
+    [reason] => 15-3-25
+)
+
+Form Values:
+Employee ID: 1
+Leave Type: personal
+Start: 2025-03-22
+End: 2025-03-29
+Reason: 15-3-25
+File Upload Path: uploads/leave_docs1742047335_Screenshot 2025-01-31 135037.png
+SQL Insert Success
+Received POST data:
+Array
+(
+    [employeeId] => 1
+    [leaveType] => personal
+    [startDate] => 2025-03-22
+    [endDate] => 2025-03-29
+    [reason] => 15-3-25
+)
+
+Form Values:
+Employee ID: 1
+Leave Type: personal
+Start: 2025-03-22
+End: 2025-03-29
+Reason: 15-3-25
+File Upload Path: No file uploaded
+SQL Insert Success
