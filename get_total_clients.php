@@ -4,7 +4,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT COUNT(*) AS total_clients FROM clients";
+$sql = "SELECT COUNT(*) AS total_clients FROM clients_follow_up";
 $result = $conn->query($sql);
 
 $total_clients = 0;

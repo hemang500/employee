@@ -43,7 +43,8 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100vh;
+    height: 90vh;
+   
 }
 
 .signup-card {
@@ -130,26 +131,41 @@ p a:hover {
     <!-- Signup Card -->
     <div class="signup-container">
         <div class="signup-card">
-            <h2>Sign Up</h2>
-            <form>
-                <div class="input-group">
-                    <i class="bi bi-person"></i>
-                    <input type="text" placeholder="Full Name" required>
+            <h2>welcome to minitzgo</h2>
+            <p>Please fill out the onboarding form.</p>
+            <form class="responsive-form">
+                <div class="form-row">
+                    <div class="input-group">
+                        <i class="bi bi-person"></i>
+                        <input type="text" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="bi bi-lock"></i>
+                        <input type="email" placeholder="Password" required>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <i class="bi bi-envelope"></i>
-                    <input type="email" placeholder="Email Address" required>
+                <div class="form-row">
+                    <div class="input-group">
+                        <i class="bi bi-phone"></i>
+                        <input type="tel" placeholder="Contact Number" required>
+                    </div>
+                    
                 </div>
+               
+                
                 <div class="input-group">
-                    <i class="bi bi-lock"></i>
-                    <input type="password" placeholder="Password" required>
+                    <i class="bi bi-people"></i>
+                    <input type="text" placeholder="Role" >
                 </div>
-                <div class="input-group">
-                    <i class="bi bi-lock"></i>
-                    <input type="password" placeholder="Confirm Password" required>
-                </div>
-                <button type="submit">Sign Up</button>
-                <p>Already have an account? <a href="index.html">Login here</a></p>
+                
+               
+                
+                <button type="submit">Submit Details</button>
+                <p>Already registered? <a href="index.html">Login here</a></p>
             </form>
         </div>
     </div>
