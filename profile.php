@@ -127,17 +127,17 @@ $employee_id = $_SESSION['employee_id'];
         height: 40px;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
     }
+    .sidebar a.logout {
+            color: red;
+            margin-top: auto;
+        }
 </style>
 </head>
 <body>
 <nav class="sidebar">
-    <a href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
-    <a href="#"><i class="bi bi-people"></i> Users</a>
-    <a href="#" class="active"><i class="bi bi-person"></i> Profile</a>
-    <a href="#"><i class="bi bi-ticket-detailed"></i> Tickets</a>
-    <a href="#"><i class="bi bi-bar-chart-line"></i> Reports</a>
-    <a href="#"><i class="bi bi-gear"></i> Settings</a>
-    <a href="#" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+<?php 
+   include 'side_bar.php';
+    ?>
 </nav>
 
 <main class="main" style="overflow-y: auto; max-height: calc(100vh - 40px); padding: 20px;">

@@ -1,5 +1,6 @@
 <?php
 session_start();
+$error = ''; // Initialize error variable
 include 'backend/db.php'; // Ensure this file correctly establishes $conn
 
 //set session timeout when browser is closed
@@ -44,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username'], $_POST['pa
                 $_SESSION['status'] = $row['status'];
                 $_SESSION['created_at'] = $row['created_at'];
 
-                header("Location: index.html");
+                header("Location: index");
                 exit();
             } else {
                 $error = "Wrong password. Please try again.";
