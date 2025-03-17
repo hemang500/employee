@@ -1,3 +1,6 @@
+<?php 
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,6 +137,18 @@
             color: red;
             margin-top: auto;
         }
+        .notification-user-status { position: relative; cursor: pointer; }
+.badge-user {
+    position: absolute;
+    top: -9px;
+    right: -5px;
+     background: red;
+    color: white;
+    border-radius: 15%;
+    padding: 2px 6px;
+    font-size: 9px;
+    opacity: 0.7;
+}
     </style>
 </head>
 <body>
@@ -154,7 +169,10 @@
 
                 <div class="icon"><i class="bi bi-bell"></i></div>
                 <div class="icon"><i class="bi bi-envelope"></i></div>
-                <div class="icon"><i class="bi bi-gear"></i></div>
+                <div class="icon notification-user-status">
+                    <i class="bi bi-person"></i>
+                    <span class="badge-user" id="status">Online</span>
+                </div>
             </div>
         </div>
         <!-- Ticket List -->
@@ -320,9 +338,75 @@
         $('#ticketModal').fadeOut(200);
     });
 });
+</script>
+<script>
+          // mouse and keyboard activity capture code
+          let inactivityTimer;
+        let isInactive = false;
+        const employeeId = <?php echo json_encode($_SESSION['employee_id']); ?>;
+        
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (isInactive) {
+                updateStatus("online");
+                isInactive = false;
+            }
+            inactivityTimer = setTimeout(() => {
+                if (!isInactive) {
+                    updateStatus("offline");
+                                        isInactive = true;
+                                    }
+                                }, 1200000); // 20 minutes inactivity timeout
+                            }
+                            
+        function updateStatus(status) {
+            if (!employeeId) return;
+            
+            $.ajax({
+                url: "update_status.php",
+                type: "POST",
+                data: {
+                    employee_id: employeeId,
+                    status: status || "offline"
+                },
+                success: function (response) {
+                    console.log("Status updated:", status);
+                    $("#status").text(status); // Update the status badge text
+                },
+                error: function () {
+                    console.log("Error updating status");
+                }
+            });
+        }
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden (minimized or tab switched)
+                clearTimeout(inactivityTimer);
+                updateStatus("other tab");
+            } else {
+                // Page is visible again
+                resetInactivityTimer();
+                updateStatus("online");
+            }
+        });
+        
+        // Listen for mouse and keyboard activity
+        window.addEventListener("mousemove", resetInactivityTimer);
+        window.addEventListener("keydown", resetInactivityTimer);
+        
+        // Send periodic heartbeat to keep session alive
+        setInterval(() => {
+            if (!document.hidden) {
+                resetInactivityTimer();
+            }
+        }, 30000); // Every 30 seconds
+
+        // Start the inactivity timer initially
+        resetInactivityTimer();
+        </script>
 
 
-
-</script>    
 </body>
 </html>

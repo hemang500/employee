@@ -17,6 +17,8 @@
     <title>Chat - Analytics Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -212,6 +214,18 @@
             color: red;
             margin-top: auto;
         }
+        .notification-user-status { position: relative; cursor: pointer; }
+.badge-user {
+    position: absolute;
+    top: -9px;
+    right: -5px;
+     background: red;
+    color: white;
+    border-radius: 15%;
+    padding: 2px 6px;
+    font-size: 9px;
+    opacity: 0.7;
+}
     </style>
 </head>
 <body>
@@ -264,9 +278,12 @@
                             </div>
                         </div>
                         <div class="header-icons">
-                            <div class="icon"><i class="bi bi-bell"></i></div>
+                            <!--div class="icon"><i class="bi bi-bell"></i></div -->
                             <div class="icon"><i class="bi bi-envelope"></i></div>
-                            <div class="icon"><i class="bi bi-gear"></i></div>
+                            <div class="icon notification-user-status">
+                    <i class="bi bi-person"></i>
+                    <span class="badge-user" id="status"></span>
+                </div>
                         </div>
                     </div>
                     <div class="chat-container" style="height: calc(100vh - 250px); overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"> 
@@ -732,6 +749,74 @@
                 }
             });
             </script>
+
+<script>
+          // mouse and keyboard activity capture code
+          let inactivityTimer;
+        let isInactive = false;
+        const employeeId = <?php echo json_encode($_SESSION['employee_id']); ?>;
+        
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (isInactive) {
+                updateStatus("online");
+                isInactive = false;
+            }
+            inactivityTimer = setTimeout(() => {
+                if (!isInactive) {
+                    updateStatus("offline");
+                                        isInactive = true;
+                                    }
+                                }, 1200000); // 20 minutes inactivity timeout
+                            }
+                            
+        function updateStatus(status) {
+            if (!employeeId) return;
+            
+            $.ajax({
+                url: "update_status.php",
+                type: "POST",
+                data: {
+                    employee_id: employeeId,
+                    status: status || "offline"
+                },
+                success: function (response) {
+                    console.log("Status updated:", status);
+                    $("#status").text(status); // Update the status badge text
+                },
+                error: function () {
+                    console.log("Error updating status");
+                }
+            });
+        }
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden (minimized or tab switched)
+                clearTimeout(inactivityTimer);
+                updateStatus("other tab");
+            } else {
+                // Page is visible again
+                resetInactivityTimer();
+                updateStatus("online");
+            }
+        });
+        
+        // Listen for mouse and keyboard activity
+        window.addEventListener("mousemove", resetInactivityTimer);
+        window.addEventListener("keydown", resetInactivityTimer);
+        
+        // Send periodic heartbeat to keep session alive
+        setInterval(() => {
+            if (!document.hidden) {
+                resetInactivityTimer();
+            }
+        }, 30000); // Every 30 seconds
+
+        // Start the inactivity timer initially
+        resetInactivityTimer();
+        </script>
 
             </body>
 </html>

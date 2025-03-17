@@ -42,6 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username'], $_POST['pa
                 $_SESSION['full_name'] = $row['full_name'];
                 $_SESSION['email'] = $row['email'];
                 $_SESSION['role'] = $row['role'];
+                $_SESSION['phone'] = $row['phone'];
                 $_SESSION['status'] = $row['status'];
                 $_SESSION['created_at'] = $row['created_at'];
 

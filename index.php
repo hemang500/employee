@@ -1,6 +1,6 @@
 <?php 
 session_start();
-  
+ 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -133,6 +133,19 @@ session_start();
     padding: 2px 6px;
     font-size: 12px;
 }
+
+.notification-user-status { position: relative; cursor: pointer; }
+.badge-user {
+    position: absolute;
+    top: -9px;
+    right: -5px;
+     background: red;
+    color: white;
+    border-radius: 15%;
+    padding: 2px 6px;
+    font-size: 9px;
+    opacity: 0.7;
+}
 .notification-dropdown {
     position: absolute;
     top: 60px;
@@ -167,9 +180,15 @@ session_start();
                     <span class="badge" id="notifications"></span>
                 </div>
                 <div class="icon"><i class="bi bi-envelope"></i></div>
-                <div class="icon"><i class="bi bi-person"></i></div>
+
+                <div class="icon notification-user-status">
+                    <i class="bi bi-person"></i>
+                    <span class="badge-user" id="status">online</span>
+                </div>
+
             </div>
-    <div id="notification-dropdown" class="notification-dropdown" style="display: none; 
+
+         <div id="notification-dropdown" class="notification-dropdown" style="display: none; 
          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
          border-radius: 8px;
          padding: 10px;
@@ -276,6 +295,73 @@ session_start();
             });
         }
     </script>
+    <script>
+          // mouse and keyboard activity capture code
+          let inactivityTimer;
+        let isInactive = false;
+        const employeeId = <?php echo json_encode($_SESSION['employee_id']); ?>;
+        
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (isInactive) {
+                updateStatus("online");
+                isInactive = false;
+            }
+            inactivityTimer = setTimeout(() => {
+                if (!isInactive) {
+                    updateStatus("offline");
+                                        isInactive = true;
+                                    }
+                                }, 1200000); // 20 minutes inactivity timeout
+                            }
+                            
+        function updateStatus(status) {
+            if (!employeeId) return;
+            
+            $.ajax({
+                url: "update_status.php",
+                type: "POST",
+                data: {
+                    employee_id: employeeId,
+                    status: status || "offline"
+                },
+                success: function (response) {
+                    console.log("Status updated:", status);
+                    $("#status").text(status); // Update the status badge text
+                },
+                error: function () {
+                    console.log("Error updating status");
+                }
+            });
+        }
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden (minimized or tab switched)
+                clearTimeout(inactivityTimer);
+                updateStatus("other tab");
+            } else {
+                // Page is visible again
+                resetInactivityTimer();
+                updateStatus("online");
+            }
+        });
+        
+        // Listen for mouse and keyboard activity
+        window.addEventListener("mousemove", resetInactivityTimer);
+        window.addEventListener("keydown", resetInactivityTimer);
+        
+        // Send periodic heartbeat to keep session alive
+        setInterval(() => {
+            if (!document.hidden) {
+                resetInactivityTimer();
+            }
+        }, 30000); // Every 30 seconds
+
+        // Start the inactivity timer initially
+        resetInactivityTimer();
+        </script>
 <script>
    let lastClearTime = localStorage.getItem('lastClearTime') ? new Date(localStorage.getItem('lastClearTime')) : new Date();
 let lastNotificationId = localStorage.getItem('lastNotificationId') || 0;
@@ -460,7 +546,7 @@ function fetchTotalTickets() {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    let inactivityTimer;
+ /*   let inactivityTimer;
     let isInactive = false;
     const employeeId = localStorage.getItem("employee_id"); // Assuming employee ID is stored
 
@@ -495,7 +581,7 @@ function fetchTotalTickets() {
     document.addEventListener("keydown", resetInactivityTimer);
 
     // Start the inactivity timer initially
-    resetInactivityTimer();
+    resetInactivityTimer();*/
 </script>
 
 </body>
