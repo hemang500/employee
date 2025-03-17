@@ -1,28 +1,18 @@
 Received POST data:
 Array
 (
-    [employeeId] => 1
+    [employeeId] => 2
     [leaveType] => personal
-    [startDate] => 2025-03-15
-    [endDate] => 2025-03-16
-    [reason] => somithing
+    [startDate] => 2025-03-17
+    [endDate] => 2025-03-23
+    [reason] => test from user 2
 )
 
 Form Values:
-Employee ID: 1
+Employee ID: 2
 Leave Type: personal
-Start: 2025-03-15
-End: 2025-03-16
-Reason: somithing
-File Upload Path: uploads/leave_docs1741993653_holi poster minitzgo.png
+Start: 2025-03-17
+End: 2025-03-23
+Reason: test from user 2
+File Upload Path: No file uploaded
 SQL Insert Success
-Received POST data:
-Array
-(
-    [employeeId] => 
-    [leaveType] => 
-    [startDate] => 
-    [endDate] => 
-    [reason] => 
-)
-
