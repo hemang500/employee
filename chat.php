@@ -282,7 +282,7 @@
                             <div class="icon"><i class="bi bi-envelope"></i></div>
                             <div class="icon notification-user-status">
                     <i class="bi bi-person"></i>
-                    <span class="badge-user" id="status"></span>
+                    <span class="badge-user" id="status">Online</span>
                 </div>
                         </div>
                     </div>
