@@ -366,10 +366,10 @@ $employee_id = $_SESSION['employee_id'];
                             <div class="leave-status" style="margin-bottom: 15px;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                                     <span>Annual Leave</span>
-                                    <span>15/20 days</span>
+                                    <span>0/20 days</span>
                                 </div>
                                 <div style="background: #eee; height: 10px; border-radius: 5px;">
-                                    <div style="width: 75%; background: #9C27B0; height: 100%; border-radius: 5px;"></div>
+                                    <div style="width: 0%; background: #9C27B0; height: 100%; border-radius: 5px;"></div>
                                 </div>
                             </div>
                             
