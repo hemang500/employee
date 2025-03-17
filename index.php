@@ -75,7 +75,7 @@ session_start();
             align-items: center;
         }
         .header-icons .icon {
-            background: white;
+            background: rgba(235, 232, 232, 0.83);
             border-radius: 50%;
             padding: 10px;
             display: flex;
@@ -119,7 +119,32 @@ session_start();
         .active{
             background-color: rgba(255, 255, 255, 0.1);
 
+
         }
+
+        .notification-bell { position: relative; cursor: pointer; }
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+.notification-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 999999;
+    width: 300px;
+    position: fixed;
+}
     </style>
 
  
@@ -133,13 +158,66 @@ session_start();
     </nav>
     <main class="main">
         <div class="header">
+           
             <h2>Hello, <?php echo $_SESSION['full_name']; ?></h2>
+           
             <div class="header-icons">
-                <div class="icon"><i class="bi bi-bell"></i></div>
+                <div class="icon notification-bell">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge" id="notifications"></span>
+                </div>
                 <div class="icon"><i class="bi bi-envelope"></i></div>
-                <div class="icon"><i class="bi bi-gear"></i></div>
+                <div class="icon"><i class="bi bi-person"></i></div>
+            </div>
+    <div id="notification-dropdown" class="notification-dropdown" style="display: none; 
+         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+         border-radius: 8px;
+         padding: 10px;
+         max-height: 400px;
+         overflow-y: auto;
+         scrollbar-width: thin;
+         scrollbar-color: #888 #f1f1f1;">
+        <div class="notification">
+            <div id="message" style="
+                padding: 5px;
+                margin-bottom: 5px;">
             </div>
         </div>
+        <style>
+            #notification-dropdown::-webkit-scrollbar {
+                width: 5px;
+            }
+            #notification-dropdown::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 5px;
+            }
+            #notification-dropdown::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 5px;
+            }
+            .notification-item {
+                background: rgba(255, 255, 255, 0.7);
+                margin-bottom: 8px;
+                border-radius: 6px;
+                transition: transform 0.2s;
+            }
+            .notification-item:hover {
+                transform: translateX(5px);
+            }
+        </style>
+    </div>
+ 
+</div>
+ 
+
+
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
         <div class="summary-cards">
             <div class="card">
                 <i class="bi bi-person-badge"></i>
@@ -198,7 +276,112 @@ session_start();
             });
         }
     </script>
+<script>
+   let lastClearTime = localStorage.getItem('lastClearTime') ? new Date(localStorage.getItem('lastClearTime')) : new Date();
+let lastNotificationId = localStorage.getItem('lastNotificationId') || 0;
 
+// Request notification permission when page loads
+if ("Notification" in window) {
+    Notification.requestPermission();
+}
+
+function showNotification(message, sender) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(`New Message from ${sender}`, {
+            body: message,
+            icon: '/path/to/icon.png' // Add your notification icon path
+        });
+    }
+}
+
+function fetchNotifications() {
+    $.ajax({
+        url: "notifications.php",
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+            let dropdown = $("#notification-dropdown");
+            let messageContainer = $("#message");
+            let notificationBadge = $("#notifications");
+
+            // Filter messages based on lastClearTime
+            let messages = response.message.filter(msg => new Date(msg.created_at) > lastClearTime);
+
+            // Check for new notifications
+            let newMessages = messages.filter(msg => msg.id > lastNotificationId);
+            newMessages.forEach(msg => {
+                showNotification(msg.message, msg.sender_name);
+                lastNotificationId = msg.id;
+            });
+
+            // Update localStorage for last notification ID
+            if (newMessages.length > 0) {
+                localStorage.setItem('lastNotificationId', lastNotificationId);
+            }
+
+            // Update notification count badge
+            notificationBadge.text(messages.length > 0 ? messages.length : "");
+
+            // Clear previous messages and update dropdown content
+            messageContainer.empty();
+
+            if (messages.length === 0) {
+                messageContainer.append(`<p class="text-center">No new notifications</p>`);
+            } else {
+                // Add "Clear All" button
+                messageContainer.append(`
+                    <button id="clearAll" class="btn btn-danger btn-sm w-100 mb-2">
+                        Clear All Notifications
+                    </button>
+                `);
+
+                // Display notifications
+                messages.forEach(msg => {
+                    messageContainer.append(`
+                        <div class="notification-item" style="padding: 10px; border-bottom: 1px solid #eee;">
+                            <strong>${msg.sender_name}</strong>
+                            <p>${msg.message}</p>
+                            <small style="color: #666;">${msg.created_at}</small>
+                        </div>
+                    `);
+                });
+            }
+        },
+        error: function() {
+            $("#notifications").text("!");
+            $("#message").html("<p class='text-danger text-center'>Error fetching notifications</p>");
+        }
+    });
+}
+
+// Notification dropdown toggle
+$(".notification-bell").on("click", function(event) {
+    event.stopPropagation();
+    $("#notification-dropdown").toggle();
+});
+
+// Periodically fetch notifications
+$(document).ready(function() {
+    fetchNotifications();
+    setInterval(fetchNotifications, 10000);
+
+    // Clear all notifications handler
+    $(document).on("click", "#clearAll", function() {
+        lastClearTime = new Date();
+        localStorage.setItem('lastClearTime', lastClearTime.toISOString());
+        fetchNotifications();
+    });
+
+    // Close dropdown when clicking outside
+    $(document).click(function(event) {
+        if (!$(event.target).closest('.notification-bell, #notification-dropdown').length) {
+            $('#notification-dropdown').hide();
+        }
+    });
+});
+
+</script>
+</script>
     <script>
         function fetchTotalClients() {
             $.ajax({
