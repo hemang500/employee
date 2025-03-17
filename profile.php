@@ -84,7 +84,7 @@ $employee_id = $_SESSION['employee_id'];
     .profile-card img {
         width: 120px;
         height: 120px;
-        border-radius: 50%;
+        border-radius: 10%;
         margin-bottom: 15px;
     }
     .profile-card h3 {
@@ -161,7 +161,7 @@ $employee_id = $_SESSION['employee_id'];
         padding: 15px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 30px rgba(0,0,0,1);
         backdrop-filter: blur(5px);
         border: 1px solid rgba(255,255,255,0.1);
         ">
@@ -172,7 +172,7 @@ $employee_id = $_SESSION['employee_id'];
 
         <div style="display: flex; justify-content: space-between; margin-top: 15px;">
             <div style="display: flex; gap: 12px;">
-            <img id="profilePic" src="https://cdn-icons-png.flaticon.com/512/3736/3736502.png" alt="Employee Picture" style="
+            <img id="profilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Employee Picture" style="
                 width: 60px;
                 height: 60px;
                 border-radius: 8px;
@@ -180,8 +180,13 @@ $employee_id = $_SESSION['employee_id'];
             ">
             <div>
                 <h3 id="employeeName" style="margin: 0; font-size: 16px;"></h3>
-                <p style="margin: 2px 0; font-size: 11px; opacity: 0.8;">ID: <span id="employeeID"></span></p>
-                <p style="margin: 0; font-size: 11px; opacity: 0.8;">Role: <span id="employeeRole"></span></p>
+                <p style="margin: 10px; font-size: 11px; opacity: 0.8; color: #fff">ID: <span id="employeeID"> <?php 
+                echo $_SESSION['employee_id'];
+                ?> </span></p>
+                <p style="margin: 0px; font-size: 11px; opacity: 0.8; color: #fff">Role: <span id="employeeRole">
+                    <?php 
+                echo $_SESSION['role'];
+                ?> </span></p>
             </div>
             </div>
         </div>
@@ -195,35 +200,47 @@ $employee_id = $_SESSION['employee_id'];
         ">
             <div><strong style="opacity: 0.7;">Dept:</strong> 
                 <span id="employeeDepartment" style="
-                    animation: dissolve 2s infinite;
-                    -webkit-background-clip: text;
-                    background-image: linear-gradient(to right, #fff, rgba(255,255,255,0.1));
-                    color: transparent;
-                "></span>
+                animation: dissolve 2s infinite;
+                background-image: linear-gradient(to right, #fff, rgba(255,255,255,0.1));
+                -webkit-background-clip: text;
+                color: #fff;
+                ">
+                <?php 
+                echo $_SESSION['role'];
+                ?>    
+            </span>
             </div>
             <div><strong style="opacity: 0.7;">Join Date:</strong> 
                 <span id="employeeJoiningDate" style="
                     animation: dissolve 2s infinite;
                     -webkit-background-clip: text;
                     background-image: linear-gradient(to right, #fff, rgba(255,255,255,0.1));
-                    color: transparent;
-                "></span>
+                    color: #fff;
+                ">
+                <?php 
+                echo $_SESSION['created_at'];
+                ?></span>
             </div>
             <div><strong style="opacity: 0.7;">Email:</strong> 
                 <span id="employeeEmail" style="
                     animation: dissolve 2s infinite;
                     -webkit-background-clip: text;
                     background-image: linear-gradient(to right, #fff, rgba(255,255,255,0.1));
-                    color: transparent;
-                "></span>
+                    color: #fff;
+                ">
+                <?php 
+                echo $_SESSION['email'];
+                ?></span>
             </div>
             <div><strong style="opacity: 0.7;">Phone:</strong> 
                 <span id="employeePhone" style="
                     animation: dissolve 2s infinite;
                     -webkit-background-clip: text;
                     background-image: linear-gradient(to right, #fff, rgba(255,255,255,0.1));
-                    color: transparent;
-                "></span>
+                    color: #fff;
+                "><?php 
+                echo $_SESSION['phone'];
+                ?></span>
             </div>
         </div>
         <style>
@@ -239,8 +256,8 @@ $employee_id = $_SESSION['employee_id'];
             position: absolute;
             bottom: 15px;
             right: 15px;
-            width: 60px;
-            height: 60px;
+            width: x;
+            height: 30px;
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
             padding: 5px;
@@ -593,7 +610,12 @@ $employee_id = $_SESSION['employee_id'];
         };
         qr.addData(JSON.stringify(qrData));
         qr.make();
-        document.getElementById('qrcode').innerHTML = qr.createImgTag(2, 0);
+        var qrImg = qr.createImgTag(2, 0); // Reduced size from 2 to 1
+        document.getElementById('qrcode').innerHTML = qrImg;
+        // Add CSS to further control the size
+        var qrElement = document.getElementById('qrcode').querySelector('img');
+        qrElement.style.width = '35px';
+        qrElement.style.height = '35px';
     }
 
     // Update the fetchEmployeeData success callback
@@ -605,7 +627,7 @@ $employee_id = $_SESSION['employee_id'];
         dataType: 'json',
         success: function(data) {
             if (data.status === 'success') {
-            $('#profilePic').attr('src', data.profile_pic || 'default.jpg');
+            $('#profilePic').attr('src', data.profile_pic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png');
             $('#employeeName').text(data.name);
             $('#employeeID').text(data.id);
             $('#employeeRole').text(data.role);
@@ -635,31 +657,7 @@ $(document).ready(function () {
     fetchEmployeeData(employeeId);
 });
 
-function fetchEmployeeData(employeeId) {
-    $.ajax({
-        url: 'fetch_employee.php',
-        type: 'POST',
-        data: { employee_id: employeeId },
-        dataType: 'json',
-        success: function (data) {
-            if (data.status === 'success') {
-                $('#profilePic').attr('src', data.profile_pic || 'default.jpg');
-                $('#employeeName').text(data.name);
-                $('#employeeID').text(data.id);
-                $('#employeeRole').text(data.role);
-                $('#employeeEmail').text(data.email);
-                $('#employeePhone').text(data.phone);
-                $('#employeeDepartment').text(data.department);
-                $('#employeeJoiningDate').text(data.joining_date);
-            } else {
-                alert('Failed to fetch employee data');
-            }
-        },
-        error: function () {
-            alert('Error fetching employee data');
-        }
-    });
-}
+
 </script>
 
 </body>
