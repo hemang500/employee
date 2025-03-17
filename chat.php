@@ -207,6 +207,11 @@
                     background: rgba(0,0,0,0.2);
                     border-radius: 4px;
                 }
+
+                .sidebar a.logout {
+            color: red;
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
@@ -214,13 +219,9 @@
 
     <div style="display: flex; flex: 1;">
         <nav class="sidebar">
-            <a href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
-            <a href="#"><i class="bi bi-people"></i> Users</a>
-            <a href="#" class="active"><i class="bi bi-chat"></i> Teams</a>
-            <a href="#"><i class="bi bi-ticket-detailed"></i> Tickets</a>
-            <a href="#"><i class="bi bi-bar-chart-line"></i> Reports</a>
-            <a href="#"><i class="bi bi-gear"></i> Settings</a>
-            <a href="#"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        <?php 
+   include 'side_bar.php';
+    ?>
         </nav>
 
         <aside class="chat-sidebar" style="overflow-y: auto; scrollbar-width: thin;">
@@ -364,7 +365,7 @@
                             
                             <i class="bi bi-send icon sends" id="sendButton" style="margin-right:30px" onclick="sendMessage()"></i>
                         <!-- File Share Modal -->
-                        <div id="fileShareModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: transprent; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
+                        <div id="fileShareModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
                             <h3>Share File's</h3>
                             <form id="fileShareForm">
                                 <input type="text" class="rounded-pill" id="fileTitle" placeholder="File Title" required><br>
@@ -380,7 +381,7 @@
                      
 
                     <!-- Meet Scheduler Modal -->
-                    <div id="meetSchedulerModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: transprent; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
+                    <div id="meetSchedulerModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); z-index: 1000;">
                         <h3>Schedule A Meet</h3>
                         <form id="meetSchedulerForm">
                             <input type="text" class="rounded-pill" id="meetTitle" placeholder="Meeting Title" required><br>
