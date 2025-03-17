@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup Page</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="styles.css">
 
 </head>
 <body>
@@ -145,13 +145,13 @@ p a:hover {
                     </div>
                     <div class="input-group">
                         <i class="bi bi-lock"></i>
-                        <input type="email" placeholder="Password" required>
+                        <input type="password" placeholder="Password" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="input-group">
                         <i class="bi bi-phone"></i>
-                        <input type="tel" placeholder="Contact Number" required>
+                        <input type="number" placeholder="Contact Number" required>
                     </div>
                     
                 </div>
@@ -169,6 +169,41 @@ p a:hover {
             </form>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+$(document).ready(function () {
+        $(".responsive-form").on("submit", function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = {
+                full_name: $("input[placeholder='Full Name']").val(),
+                email: $("input[placeholder='Email']").val(),
+                password: $("input[placeholder='Password']").val(),
+                phone: $("input[placeholder='Contact Number']").val(),
+                role: $("input[placeholder='Role']").val()
+            };
+
+            $.ajax({
+                url: "signup_ftch.php",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    alert(response.message);
+                    if (response.status === "success") {
+                        window.location.href = "login.php"; // Redirect to login page
+                    }
+                },
+                error: function () {
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        });
+    });
+
+    </script>
 
 </body>
 </html>
