@@ -376,7 +376,7 @@ if (!isset($_SESSION['employee_id'])) {
         // Start the inactivity timer initially
         resetInactivityTimer();
         </script>
-
+<script>
 
 </body>
 </html>

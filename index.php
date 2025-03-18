@@ -435,6 +435,7 @@ function fetchNotifications() {
                         </div>
                     `);
                 });
+                sendNotification()
             }
         },
         error: function() {
@@ -453,7 +454,7 @@ $(".notification-bell").on("click", function(event) {
 // Periodically fetch notifications
 $(document).ready(function() {
     fetchNotifications();
-    setInterval(fetchNotifications, 10000);
+    setInterval(fetchNotifications, 7500);
 
     // Clear all notifications handler
     $(document).on("click", "#clearAll", function() {
@@ -547,7 +548,42 @@ function fetchTotalTickets() {
 
     </script>
 </script>
+<script>
 
+    //windows notifications
+        function sendNotification() {
+            // Check if the browser supports notifications
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notifications.");
+                return;
+            }
+
+            // Ask for permission if not granted
+            if (Notification.permission === "granted") {
+                showNotification();
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        showNotification();
+                    }
+                });
+            }
+        }
+
+        function showNotification() {
+            const notification = new Notification("minitzgo", {
+                body: "Checkout you have a new Notification.",
+                icon: "images/dlogo.png" // Change to your preferred icon
+            });
+
+            // Optional: Add a click event to open a URL
+            notification.onclick = function() {
+                window.open("https:www.minitzgo.com/edashboard/index");
+            };
+            
+        }
+        
+    </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  /*   let inactivityTimer;
