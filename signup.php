@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['employee_id'])) {
+    header("Location: login"); // Redirect to login page if not logged in
+    exit();
+} ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
