@@ -253,7 +253,7 @@ if (!isset($_SESSION['employee_id'])) {
    include 'backend/db.php';
     
 
-    $sql = "SELECT * FROM users WHERE role !='admin' ";
+    $sql = "SELECT * FROM employees WHERE role !='admin' ";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {

@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username'], $_POST['pa
     $password = $_POST['password'];
 
     // Fetch user details including full_name, role, and status
-    $stmt = $conn->prepare("SELECT id, full_name, email, phone, role, status, password, created_at FROM users WHERE LOWER(email) = LOWER(?)");
+    $stmt = $conn->prepare("SELECT id, full_name, email, phone, role, status, password, created_at FROM employees WHERE LOWER(email) = LOWER(?)");
     
     if (!$stmt) {
         die("Error in SQL: " . $conn->error);

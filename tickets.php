@@ -218,7 +218,7 @@ if (!isset($_SESSION['employee_id'])) {
                                     </div>
                                     <?php 
                                     include 'backend/db.php';
-                                    $sql = "SELECT * FROM users";
+                                    $sql = "SELECT * FROM employees";
                                     $result = $conn->query($sql);
                                     ?>
                                     <div class="mb-3">

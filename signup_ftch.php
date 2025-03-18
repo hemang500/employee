@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // ✅ Check if email already exists
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id FROM employees WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashed_password = $password; // Replace this with password_hash($password, PASSWORD_DEFAULT);
 
     // ✅ Insert into database
-    $stmt = $conn->prepare("INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO employees (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssss", $full_name, $email, $hashed_password, $phone, $role);
 
     if ($stmt->execute()) {

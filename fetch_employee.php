@@ -11,7 +11,7 @@ if (!isset($_SESSION['employee_id'])) {
 
 $employee_id = intval($_SESSION['employee_id']);
 
-$query = "SELECT id, full_name AS name, email, phone, role, status, created_at AS joining_date FROM users WHERE id = ?";
+$query = "SELECT id, full_name AS name, email, phone, role, status, created_at AS joining_date FROM employees WHERE id = ?";
 $stmt = $conn->prepare($query);
 
 if (!$stmt) {
