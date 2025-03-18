@@ -237,19 +237,40 @@
    include 'side_bar.php';
     ?>
         </nav>
+        <aside class="chat-sidebar" style="max-height: calc(100vh - 40px); overflow-y: auto; scrollbar-width: thin; --scrollbar-width: 3px; --scrollbar-track-background: transparent; --scrollbar-thumb-background: rgba(255,255,255,0.2);">  <h4>Team Members</h4>
+                <div class="member active-chat"><img src="images/dev.webp" alt=""> Dev Intern's</div><br>
+                <div class="member"><img src="images/ui.jpg" alt=""> UX/UI Team</div> <hr> 
+                <span style="opacity:0.6;">Team Members:  
+                <?php 
+   include 'backend/db.php';
+    
 
-        <aside class="chat-sidebar" style="overflow-y: auto; scrollbar-width: thin;">
-                    <h4>Team Members</h4>
-                    <div class="member active-chat"><img src="images/dev.webp" alt=""> Dev Intern's</div><br>
-                    <div class="member"><img src="images/ui.jpg" alt=""> UX/UI Team</div><hr><span style="opacity:0.6;">Management  </span>
-                    <span style="opacity:0.4; padding:10px"> No access</span>
-                    <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Production</div>
-                    <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Deployment</div>
-                    <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Seniors Team</div>
-                    <div class="member"><img src="https://www.shutterstock.com/image-vector/blazer-icon-vector-glyph-style-260nw-1182172069.jpg" alt=""> BDM Team</div>
-                    <div class="member"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRcRBoorAOVAOqotm-7CX878D0HMg1QtbIkordKUJRlSmEj0n8FN8Gclz7EV-kr0tw_3Q&usqp=CAU" alt=""> Sales Team</div>
-                    <div class="member"><img src="https://cdn2.vectorstock.com/i/1000x1000/84/71/neon-glowing-star-vector-13368471.jpg" alt=""> Marketing Team</div>
-                </aside>
+    $sql = "SELECT * FROM users WHERE role !='admin' ";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            echo "<div class='member'><img src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' alt=''> ".$row['full_name']."</div>";
+        }
+    }
+    ?></span>
+    <hr>
+    </span><span style="opacity:0.8;  "> Status
+    <div id="active-employees"></div>
+    </span>
+<br>
+ 
+
+                 
+                <hr> 
+                <span style="opacity:0.6;">Management  </span><span style="opacity:0.4; padding:10px"> No access</span>
+
+                <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Production</div>
+                <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Deployment</div>
+                <div class="member"><img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt=""> Seniors Team</div>
+                <div class="member"><img src="https://www.shutterstock.com/image-vector/blazer-icon-vector-glyph-style-260nw-1182172069.jpg" alt=""> BDM Team</div>
+                <div class="member"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRcRBoorAOVAOqotm-7CX878D0HMg1QtbIkordKUJRlSmEj0n8FN8Gclz7EV-kr0tw_3Q&usqp=CAU" alt=""> Sales Team</div>
+                <div class="member"><img src="https://cdn2.vectorstock.com/i/1000x1000/84/71/neon-glowing-star-vector-13368471.jpg" alt=""> Marketing Team</div>
+            </aside>
 
                 <!-- Main chat Area -->
                 <main class="main">
@@ -282,7 +303,7 @@
                             <div class="icon"><i class="bi bi-envelope"></i></div>
                             <div class="icon notification-user-status">
                     <i class="bi bi-person"></i>
-                    <span class="badge-user" id="status"></span>
+                    <span class="badge-user" id="status">Online</span>
                 </div>
                         </div>
                     </div>
@@ -350,6 +371,29 @@
                     fetchMessages();
                     setInterval(fetchMessages, 500);
                     </script>
+                    <script>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function loadActiveEmployees() {
+        $.ajax({
+            url: "fetch_active_employees.php", // Fetch data from the PHP script
+            method: "GET",
+            success: function (data) {
+                $("#active-employees").html(data); // Update the div with new data
+            },
+            error: function () {
+                console.error("Failed to load active employees.");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        loadActiveEmployees(); // Load data initially
+        setInterval(loadActiveEmployees, 500); // Refresh every 5 seconds
+    });
+</script>
+
+                        </script>
                     
 <div class="message-input" style="position: sticky; bottom: 0; width: 100%; margin: 10px 0; display: flex; flex-wrap: nowrap; align-items: center;">
                         <input type="text" id="messageInput" placeholder="Type a message..." style="flex: 1; min-width: 0; padding: 10px;" 
