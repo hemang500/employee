@@ -1,10 +1,11 @@
 <?php 
 session_start();
+
 require_once 'backend/db.php';
 
 // Redirect if no employee session exists
 if (!isset($_SESSION['employee_id'])) {
-header("Location: login.php");
+header("Location: login");
 exit;
 }
 
@@ -376,8 +377,8 @@ $employee_id = $_SESSION['employee_id'];
                             <div class="upcoming-leaves">
                                 <h6>Leaves Status</h6>
                                 <div style="background: #f5f5f5; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                                    <p style="margin: 0;">Dec 25-26 <small style="color: #fff; background-color:red; padding:5px; border-radius:15px; font-size:12px">Approved</small></p>
-                                    <small style="color: #666;">Christmas Holiday</small>
+                                    <p style="margin: 0;"><small style="color: #fff; background-color:red; padding:5px; border-radius:15px; font-size:12px">Approved</small></p>
+                                    <small style="color: #666;">No leaves pending</small>
                                     
                                 </div>
                                 <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#leaveModal">
