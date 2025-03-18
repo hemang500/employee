@@ -240,9 +240,7 @@ if (!isset($_SESSION['employee_id'])) {
         <br>
         <br>
         <br>
-        <br>
-        <br>
-        <br>
+       
         <div class="summary-cards">
             <div class="card">
                 <i class="bi bi-person-badge"></i>

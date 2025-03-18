@@ -245,7 +245,14 @@ if (!isset($_SESSION['employee_id'])) {
    include 'side_bar.php';
     ?>
         </nav>
-        <aside class="chat-sidebar" style="max-height: calc(100vh - 40px); overflow-y: auto; scrollbar-width: thin; --scrollbar-width: 3px; --scrollbar-track-background: transparent; --scrollbar-thumb-background: rgba(255,255,255,0.2);">  <h4>Team Members</h4>
+        <aside class="chat-sidebar" style="max-height: calc(100vh - 0px); overflow-y: auto; scrollbar-width: thin; --scrollbar-width: 3px; --scrollbar-track-background: transparent; --scrollbar-thumb-background: rgba(255,255,255,0.2);">
+              
+        <br>
+        <br>
+        <br>
+        <br>
+        
+        <h4>Team Members</h4>
                 <div class="member active-chat"><img src="images/dev.webp" alt=""> Dev Intern's</div><br>
                 <div class="member"><img src="images/ui.jpg" alt=""> UX/UI Team</div> <hr> 
                 <span style="opacity:0.6;">Team Members:  
