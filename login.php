@@ -1,71 +1,53 @@
 <?php
 session_start();
-$error = ''; // Initialize error variable
 include 'backend/db.php'; // Ensure this file correctly establishes $conn
 
-//set session timeout when browser is closed
-// session_set_cookie_params(0);
-
+// Ensure database connection is established
 if (!$conn) {
     die("Database connection failed: " . mysqli_connect_error());
 }
 
-// Check if form is submitted
+// Initialize error variable
+$error = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username'], $_POST['password'])) {
-    $email = trim(strtolower($_POST['username'])); // Convert username/email to lowercase
+    $email = trim(strtolower($_POST['username'])); // Convert email to lowercase
     $password = $_POST['password'];
 
-    // Fetch user details including full_name, role, and status
+    // Prepare the SQL statement
     $stmt = $conn->prepare("SELECT id, full_name, email, phone, role, status, password, created_at FROM employees WHERE LOWER(email) = LOWER(?)");
-    
+
     if (!$stmt) {
-        die("Error in SQL: " . $conn->error);
+        die("SQL Error: " . $conn->error);
     }
 
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows == 1) {
+    if ($result->num_rows === 1) {
         $row = $result->fetch_assoc();
+        $storedPassword = $row['password'];
 
-        // Debugging logs
-        error_log("Stored hash: " . $row['password']);
-        error_log("Provided password: " . $password);
-        error_log("Password verification result: " . (password_verify($password, $row['password']) ? 'true' : 'false'));
+        // Check if the password is hashed or plain text
+        if (password_verify($password, $storedPassword) || $password === $storedPassword) {
+            // Regenerate session ID for security
+            session_regenerate_id(true);
 
-        if (strlen($row['password']) < 20) {
-            // For non-hashed passwords
-            if ($password === $row['password']) {
-                // Store user data in session
-                $_SESSION['employee_id'] = $row['id'];
-                $_SESSION['full_name'] = $row['full_name'];
-                $_SESSION['email'] = $row['email'];
-                $_SESSION['role'] = $row['role'];
-                $_SESSION['phone'] = $row['phone'];
-                $_SESSION['status'] = $row['status'];
-                $_SESSION['created_at'] = $row['created_at'];
-
-                header("Location: index");
-                exit();
-            } else {
-                $error = "Wrong password. Please try again.";
-                error_log("Login failed: Wrong password for user " . $email);
-            }
-        } elseif (password_verify($password, $row['password'])) {
-            // Store user data in session
+            // Store user details in session
             $_SESSION['employee_id'] = $row['id'];
             $_SESSION['full_name'] = $row['full_name'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['role'] = $row['role'];
+            $_SESSION['phone'] = $row['phone'];
             $_SESSION['status'] = $row['status'];
-            $_SESSION['password'] = $row['password']; // Consider removing for security
             $_SESSION['created_at'] = $row['created_at'];
 
-            header("Location: index.html");
+            // Redirect to dashboard
+            header("Location: index.php");
             exit();
         } else {
-            $error = "Invalid password!";
+            $error = "Incorrect password!";
         }
     } else {
         $error = "Invalid email!";
@@ -268,3 +250,4 @@ button:hover {
 </footer>
  
 </body>
+</html>
