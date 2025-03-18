@@ -189,15 +189,15 @@ session_start();
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="ticketForm">
+                                <form id="ticketForm" method="POST" action="create_ticket.php">
                                     <div class="mb-3">
                                         <label for="ticketTitle" class="form-label">Title*</label>
-                                        <input type="text" class="form-control" id="ticketTitle" name="title" required 
+                                        <input type="text" class="form-control" id="title" name="title" required 
                                             style="background: #979696; color: #fff; border-color: #333;">
                                     </div>
                                     <div class="mb-3">
                                         <label for="ticketDescription" class="form-label">Description*</label>
-                                        <textarea class="form-control" id="ticketDescription" name="description" rows="3" required
+                                        <textarea class="form-control" id="description" name="description" rows="3" required
                                             style="background: #1a1a1a; color: #fff; border-color: #333;"></textarea>
                                     </div>
                                     <div class="mb-3">
@@ -209,77 +209,37 @@ session_start();
                                             <option value="high">High</option>
                                         </select>
                                     </div>
+                                    <?php 
+                                    include 'backend/db.php';
+                                    $sql = "SELECT * FROM users";
+                                    $result = $conn->query($sql);
+                                    ?>
                                     <div class="mb-3">
-                                        <label for="ticketAssignee" class="form-label">Assignee*</label>
-                                        <input type="text" class="form-control" id="ticketAssignee" name="assignee" required
-                                            style="background: linear-gradient(to right, #504c4c, #6b5f5f);">
+                                        <label for="assignTo" class="form-label">Assign To*</label>
+                                        <select class="form-control" id="assignTo" name="assignee" required
+                                            style="background: #1a1a1a; color: #fff; border-color: #333;">
+                                            <?php
+                                            if ($result->num_rows > 0) {
+                                                while($row = $result->fetch_assoc()) {
+                                                    echo '<option value="' . htmlspecialchars($row['full_name']) . '">' . htmlspecialchars($row['full_name']) . ' <small style="font-size:10px">(' . htmlspecialchars($row['role']) . ')</small></option>';
+                                                }
+                                            }
+                                            ?>
+                                        </select>
                                     </div>
+                                    
                                 </form>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="submitTicket()">Create Ticket</button>
+                                <input type="submit" class="btn btn-primary" value="Create Ticket" form="ticketForm">
                             </div>
                         </div>
                     </div>
                 </div>
+ 
 
-                <script>
-                function submitTicket() {
-                    // Validate form fields
-                    if (!$('#ticketForm')[0].checkValidity()) {
-                        $('#ticketForm')[0].reportValidity();
-                        return;
-                    }
-
-                    const formData = {
-                        title: $('#ticketTitle').val().trim(),
-                        description: $('#ticketDescription').val().trim(),
-                        priority: $('#ticketPriority').val(),
-                        assignee: $('#ticketAssignee').val().trim()
-                    };
-
-                    // Validate data before sending
-                    if (!formData.title || !formData.description || !formData.assignee) {
-                        alert('Please fill all required fields');
-                        return;
-                    }
-
-                    $.ajax({
-                        url: 'create_ticket.php',
-                        method: 'POST',
-                        data: JSON.stringify(formData),
-                        contentType: 'application/json',
-                        dataType: 'json',
-                        success: function(response) {
-                            try {
-                                // Response is already parsed as JSON due to dataType: 'json'
-                                if (response.success) {
-                                    // Close modal and show success message
-                                    $('#createTicketModal').modal('hide');
-                                    alert('Ticket created successfully!');
-                                    // Clear form
-                                    $('#ticketForm')[0].reset();
-                                    // Reload tickets list
-                                    loadTickets();
-                                } else {
-                                    alert('Error creating ticket: ' + response.message);
-                                }
-                            } catch (e) {
-                                console.error('JSON parsing error:', e);
-                                alert('Error processing server response');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.log('XHR:', xhr);
-                            console.log('Status:', status);
-                            console.log('Error:', error);
-                            alert('Error creating ticket: ' + error);
-                        }
-                    });
-                }
-                </script>
-    </main>
+  
 
     <!-- Hover Modal -->
     <div class="modal-hover" id="ticketModal">
@@ -288,6 +248,8 @@ session_start();
         <small id="ticketStatus"></small>
     </div>
 <script>
+           
+               
  $(document).ready(function () {
     function loadTickets() {
         $.ajax({
@@ -310,6 +272,7 @@ session_start();
     // Auto-refresh every 3 seconds (3000ms) for faster updates
     setInterval(loadTickets, 3000);
 
+  
     // Show hover modal with ticket details
     $(document).on('mouseenter', '.ticket-item', function (e) {
         let ticketId = $(this).data('id');
