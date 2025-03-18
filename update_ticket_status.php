@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "edashboard");
+include 'backend/db.php';
 
 if ($conn->connect_error) {
     die(json_encode(["success" => false, "message" => "Database connection failed"]));

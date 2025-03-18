@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-$connection = new mysqli("localhost", "root", "", "your_database");
+include 'backend/db.php';
 
-if ($connection->connect_error) {
+if ($conn->connect_error) {
     echo json_encode(["error" => "Database connection failed"]);
     exit;
 }
@@ -17,7 +17,7 @@ if (!$ticketId || !$assignTo) {
 }
 
 $query = "UPDATE tickets SET assigned_to = ? WHERE id = ?";
-$stmt = $connection->prepare($query);
+$stmt = $conn->prepare($query);
 $stmt->bind_param("si", $assignTo, $ticketId);
 $success = $stmt->execute();
 
@@ -28,5 +28,5 @@ if ($success) {
 }
 
 $stmt->close();
-$connection->close();
+$conn->close();
 ?>

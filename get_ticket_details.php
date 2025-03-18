@@ -1,10 +1,10 @@
 <?php
 header('Content-Type: application/json');
 
-$connection = new mysqli("localhost", "root", "", "your_database");
+include 'backend/db.php';
 
-if ($connection->connect_error) {
-    echo json_encode(["error" => "Database connection failed"]);
+if ($conn->connect_error) {
+    echo json_encode(["error" => "Database conn failed"]);
     exit;
 }
 
@@ -16,7 +16,7 @@ if (!$ticketId) {
 }
 
 $query = "SELECT id, title, description, status FROM tickets WHERE id = ?";
-$stmt = $connection->prepare($query);
+$stmt = $conn->prepare($query);
 $stmt->bind_param("i", $ticketId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -28,5 +28,5 @@ if ($result->num_rows > 0) {
 }
 
 $stmt->close();
-$connection->close();
+$conn->close();
 ?>

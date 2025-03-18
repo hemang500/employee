@@ -6,7 +6,7 @@ if (!isset($_SESSION['employee_id'])) {
     header("Location: login"); // Redirect to login page if not logged in
     exit();
 } 
-
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
