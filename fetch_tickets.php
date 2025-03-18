@@ -38,7 +38,13 @@ while ($row = mysqli_fetch_assoc($result)) {
             </div>
             </div>
             <div class='mb-3'>
-            <p class='card-text text-muted' id='description-{$row['ticket_id']}'>$description</p>
+            <p class='card-text text-muted' id='description-{$row['ticket_id']}'>" . 
+                preg_replace(
+                    '/((http|https):\/\/[^\s<]+)/i',
+                    '<a href="$1" target="_blank" class="text-primary">$1</a>',
+                    $description
+                ) . 
+            "</p>
             </div>
             <div class='ticket-meta d-flex justify-content-between align-items-center flex-wrap'>
             <div class='text-muted small'>
@@ -54,7 +60,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             <div class='d-flex align-items-center gap-2'>
             <button class='btn btn-light btn-sm rounded-pill' 
                 onclick='copyDescription({$row['ticket_id']})'>
-                <i class='fas fa-copy me-1'></i> Copy Description
+                <i class='fas fa-copy me-1'></i> Copy 
             </button>
             <select class='form-select form-select-sm rounded-pill status-select' style='width: auto; border: none; background-color:rgba(181, 204, 204, 0.52)' data-ticket-id='{$row['ticket_id']}'>
             <option value='Open'" . ($status == 'Open' ? ' selected' : '') . ">Open</option>
